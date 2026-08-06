@@ -1,0 +1,196 @@
+@using HolonetAgents.Web.Models
+@using HolonetAgents.Web.Services
+@inject FoundryAgentService AgentService
+@inject IOptions<FoundryOptions> FoundryOptions
+@using Microsoft.Extensions.Options
+@implements IDisposable
+
+@if (_isLoadingAgents)
+{
+    <div class="agent-loading" role="status" aria-live="polite">
+        <div class="spinner-border text-primary" aria-hidden="true"></div>
+        <span>Loading agent...</span>
+    </div>
+}
+
+<div class="chat-shell">
+    <div class="chat-toolbar">
+        <label class="form-label mb-0" for="@_agentSelectId">Agent</label>
+        <select id="@_agentSelectId" class="form-select" value="@_selectedAgentId" @onchange="OnAgentChangedAsync" disabled="@(_isBusy || _agents.Count == 0 || IsAgentSelectionLocked)">
+            @if (_agents.Count == 0)
+            {
+                <option value="">(no agents found)</option>
+            }
+            @foreach (var agent in _agents)
+            {
+                <option value="@agent.Id">@agent.Name</option>
+            }
+        </select>
+        <button type="button" class="btn btn-outline-secondary" @onclick="StartNewConversationAsync" disabled="@_isBusy">
+            New conversation
+        </button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(_startupError))
+    {
+        <div class="alert alert-danger" role="alert">@_startupError</div>
+    }
+
+    <div class="chat-history" aria-live="polite">
+        @if (_messages.Count == 0)
+        {
+            <p class="text-muted">Send a message to start chatting with the selected agent.</p>
+        }
+        @foreach (var message in _messages)
+        {
+            <div class="chat-message @(message.Role == ChatRole.User ? "chat-message-user" : "chat-message-agent") @(message.IsError ? "chat-message-error" : null)">
+                <div class="chat-message-meta">
+                    @(message.Role == ChatRole.User ? "You" : _selectedAgentName) · @message.Timestamp.ToString("t")
+                </div>
+                <div class="chat-message-text">@message.Text</div>
+            </div>
+        }
+        @if (_isBusy)
+        {
+            <div class="chat-message chat-message-agent">
+                <div class="chat-message-text text-muted">Thinking…</div>
+            </div>
+        }
+    </div>
+
+    <EditForm Model="_form" OnValidSubmit="SendAsync" FormName="@FormName">
+        <div class="chat-composer">
+            <InputText @bind-Value="_form.Message" class="form-control" placeholder="Type a message…" disabled="@(_isBusy || !_canChat)" />
+            <button type="submit" class="btn btn-primary" disabled="@(!_canChat)">Send</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private readonly List<ChatMessage> _messages = new();
+    private readonly MessageForm _form = new();
+    private readonly CancellationTokenSource _cts = new();
+    private readonly string _agentSelectId = $"agent-select-{Guid.NewGuid():N}";
+
+    [Parameter]
+    public string? FixedAgentName { get; set; }
+
+    private IReadOnlyList<AgentSummary> _agents = Array.Empty<AgentSummary>();
+    private string? _selectedAgentId;
+    private string? _startupError;
+    private bool _isLoadingAgents = true;
+    private bool _isBusy;
+    private string? _previousResponseId;
+
+    private bool IsAgentSelectionLocked => !string.IsNullOrWhiteSpace(FixedAgentName);
+    private string FormName => IsAgentSelectionLocked ? $"agent-chat-{FixedAgentName}" : "agent-chat";
+    private bool _canChat => !string.IsNullOrEmpty(_selectedAgentId) && string.IsNullOrEmpty(_startupError);
+
+    private string _selectedAgentName =>
+        _agents.FirstOrDefault(agent => agent.Id == _selectedAgentId)?.Name ?? "Agent";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _agents = await AgentService.GetAgentsAsync(_cts.Token);
+
+            if (IsAgentSelectionLocked)
+            {
+                _selectedAgentId = _agents.FirstOrDefault(agent =>
+                    string.Equals(agent.Name, FixedAgentName, StringComparison.OrdinalIgnoreCase))?.Id;
+
+                if (_selectedAgentId is null)
+                {
+                    _startupError = $"The configured agent '{FixedAgentName}' was not found in the Azure AI Foundry project.";
+                }
+            }
+            else
+            {
+                var defaultAgentId = FoundryOptions.Value.DefaultAgentId;
+                _selectedAgentId = _agents.Any(agent => agent.Id == defaultAgentId)
+                    ? defaultAgentId
+                    : _agents.FirstOrDefault()?.Id;
+            }
+
+            if (_agents.Count == 0)
+            {
+                _startupError = "No agents were found in the configured Azure AI Foundry project.";
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Component is being disposed.
+        }
+        catch (Exception ex)
+        {
+            _startupError = $"Could not load agents from Azure AI Foundry: {ex.Message}";
+        }
+        finally
+        {
+            _isLoadingAgents = false;
+        }
+    }
+
+    private async Task OnAgentChangedAsync(ChangeEventArgs args)
+    {
+        if (IsAgentSelectionLocked)
+        {
+            return;
+        }
+
+        _selectedAgentId = args.Value?.ToString();
+        await StartNewConversationAsync();
+    }
+
+    private Task StartNewConversationAsync()
+    {
+        _messages.Clear();
+        _previousResponseId = null;
+        _form.Message = string.Empty;
+        return Task.CompletedTask;
+    }
+
+    private async Task SendAsync()
+    {
+        var text = _form.Message?.Trim();
+        if (string.IsNullOrEmpty(text) || _isBusy || !_canChat)
+        {
+            return;
+        }
+
+        _form.Message = string.Empty;
+        _messages.Add(new ChatMessage { Role = ChatRole.User, Text = text });
+        _isBusy = true;
+
+        try
+        {
+            var reply = await AgentService.SendMessageAsync(_previousResponseId, _selectedAgentId!, text, _cts.Token);
+            _previousResponseId = reply.ResponseId;
+            _messages.Add(new ChatMessage { Role = ChatRole.Agent, Text = reply.Text });
+        }
+        catch (OperationCanceledException)
+        {
+            // Component is being disposed.
+        }
+        catch (Exception ex)
+        {
+            _messages.Add(new ChatMessage { Role = ChatRole.Agent, Text = ex.Message, IsError = true });
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+
+    private sealed class MessageForm
+    {
+        public string? Message { get; set; }
+    }
+}
