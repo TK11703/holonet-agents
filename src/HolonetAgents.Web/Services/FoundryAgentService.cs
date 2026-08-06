@@ -103,12 +103,30 @@ public sealed class FoundryAgentService
         using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeoutSource.CancelAfter(TimeSpan.FromSeconds(Math.Max(1, _options.RunTimeoutSeconds)));
 
-        while (run.Status == RunStatus.Queued || run.Status == RunStatus.InProgress)
+        try
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(500), timeoutSource.Token).ConfigureAwait(false);
-            run = (await client.Runs
-                .GetRunAsync(threadId, run.Id, timeoutSource.Token)
-                .ConfigureAwait(false)).Value;
+            while (run.Status == RunStatus.Queued || run.Status == RunStatus.InProgress)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(500), timeoutSource.Token).ConfigureAwait(false);
+                run = (await client.Runs
+                    .GetRunAsync(threadId, run.Id, timeoutSource.Token)
+                    .ConfigureAwait(false)).Value;
+            }
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning("Agent run {RunId} did not complete within {Timeout} seconds.", run.Id, _options.RunTimeoutSeconds);
+            throw new TimeoutException(
+                $"The agent did not respond within {_options.RunTimeoutSeconds} seconds.");
+        }
+
+        if (run.Status == RunStatus.RequiresAction)
+        {
+            // Client-side function tools would need tool outputs submitted back to the run,
+            // which this chat window does not implement.
+            _logger.LogWarning("Agent run {RunId} requires client-side tool outputs, which are not supported.", run.Id);
+            throw new NotSupportedException(
+                "The agent requested a client-side tool call, which this chat window does not support.");
         }
 
         if (run.Status != RunStatus.Completed)
