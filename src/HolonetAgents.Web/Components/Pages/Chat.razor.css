@@ -63,9 +63,10 @@
 .chat-composer {
     display: flex;
     gap: 0.5rem;
-    align-items: flex-end;
+    align-items: center;
 }
 
 .chat-composer .form-control {
     flex: 1 1 auto;
+    min-width: 0;
 }
