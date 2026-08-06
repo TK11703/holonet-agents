@@ -21,6 +21,8 @@ public sealed class FoundryAgentService
     private readonly AIProjectClient? _client;
     private readonly FoundryOptions _options;
     private readonly ILogger<FoundryAgentService> _logger;
+    private readonly SemaphoreSlim _agentCacheLock = new(1, 1);
+    private IReadOnlyList<AgentSummary>? _agentCache;
 
     public FoundryAgentService(IOptions<FoundryOptions> options, ILogger<FoundryAgentService> logger)
     {
@@ -50,21 +52,65 @@ public sealed class FoundryAgentService
     }
 
     /// <summary>
-    /// Lists the agents that already exist in the configured Foundry project.
+    /// Returns the cached agents, loading them from the configured Foundry project when needed.
     /// </summary>
-    public async Task<IReadOnlyList<AgentSummary>> GetAgentsAsync(CancellationToken cancellationToken = default)
+    public Task<IReadOnlyList<AgentSummary>> GetAgentsAsync(CancellationToken cancellationToken = default)
     {
-        var client = EnsureClient();
-        var agents = new List<AgentSummary>();
+        var cachedAgents = Volatile.Read(ref _agentCache);
+        return cachedAgents is not null
+            ? Task.FromResult(cachedAgents)
+            : LoadAgentsAsync(forceRefresh: false, cancellationToken);
+    }
 
-        await foreach (ProjectsAgentRecord agent in client.AgentAdministrationClient
-            .GetAgentsAsync(cancellationToken: cancellationToken)
-            .ConfigureAwait(false))
+    /// <summary>
+    /// Reloads agents from Foundry and atomically replaces the shared cache.
+    /// </summary>
+    public Task<IReadOnlyList<AgentSummary>> RefreshAgentsAsync(CancellationToken cancellationToken = default) =>
+        LoadAgentsAsync(forceRefresh: true, cancellationToken);
+
+    private async Task<IReadOnlyList<AgentSummary>> LoadAgentsAsync(
+        bool forceRefresh,
+        CancellationToken cancellationToken)
+    {
+        await _agentCacheLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        try
         {
-            agents.Add(new AgentSummary(agent.Name, agent.Name));
-        }
+            var cachedAgents = Volatile.Read(ref _agentCache);
+            if (!forceRefresh && cachedAgents is not null)
+            {
+                return cachedAgents;
+            }
 
-        return agents;
+            var client = EnsureClient();
+            var agents = new List<AgentSummary>();
+            using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeoutSource.CancelAfter(TimeSpan.FromSeconds(Math.Max(1, _options.AgentListTimeoutSeconds)));
+
+            try
+            {
+                await foreach (ProjectsAgentRecord agent in client.AgentAdministrationClient
+                    .GetAgentsAsync(cancellationToken: timeoutSource.Token)
+                    .ConfigureAwait(false))
+                {
+                    agents.Add(new AgentSummary(agent.Name, agent.Name));
+                }
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                throw new TimeoutException(
+                    $"The Foundry agent list did not load within {_options.AgentListTimeoutSeconds} seconds.");
+            }
+
+            IReadOnlyList<AgentSummary> refreshedAgents = agents.ToArray();
+            Volatile.Write(ref _agentCache, refreshedAgents);
+            _logger.LogInformation("Cached {AgentCount} agents from Azure AI Foundry.", refreshedAgents.Count);
+            return refreshedAgents;
+        }
+        finally
+        {
+            _agentCacheLock.Release();
+        }
     }
 
     /// <summary>

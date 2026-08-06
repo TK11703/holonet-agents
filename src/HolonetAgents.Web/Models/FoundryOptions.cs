@@ -23,6 +23,11 @@ public sealed class FoundryOptions
     public string? ManagedIdentityClientId { get; set; }
 
     /// <summary>
+    /// How long to wait when loading the agent list from Foundry.
+    /// </summary>
+    public int AgentListTimeoutSeconds { get; set; } = 30;
+
+    /// <summary>
     /// How long to wait for an agent run to complete before giving up.
     /// </summary>
     public int RunTimeoutSeconds { get; set; } = 120;

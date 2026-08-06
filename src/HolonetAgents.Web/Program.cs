@@ -12,6 +12,7 @@ builder.Services.AddOptions<FoundryOptions>()
     .Bind(builder.Configuration.GetSection(FoundryOptions.SectionName));
 
 builder.Services.AddSingleton<FoundryAgentService>();
+builder.Services.AddHostedService<FoundryAgentCacheWarmupService>();
 
 var app = builder.Build();
 
