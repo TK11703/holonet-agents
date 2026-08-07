@@ -1,6 +1,7 @@
 using HolonetAgents.Web.Components;
 using HolonetAgents.Web.Models;
 using HolonetAgents.Web.Services;
+using HolonetAgents.Web.Services.AgentResponses;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ builder.Services.AddOptions<FoundryOptions>()
     .Bind(builder.Configuration.GetSection(FoundryOptions.SectionName));
 
 builder.Services.AddSingleton<FoundryAgentService>();
+builder.Services.AddSingleton<AgentResponseParser>();
+builder.Services.AddSingleton<AgentResponseContractResolver>();
 builder.Services.AddHostedService<FoundryAgentCacheWarmupService>();
 
 var app = builder.Build();

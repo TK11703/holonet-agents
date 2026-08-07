@@ -166,4 +166,4 @@ public sealed class FoundryAgentService
 /// </summary>
 public sealed record AgentSummary(string Id, string Name);
 
-public sealed record AgentReply(string ResponseId, string Text);
+public sealed record AgentReply(string ResponseId, string RawText);

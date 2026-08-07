@@ -1,0 +1,18 @@
+@using HolonetAgents.Web.Models
+
+<div class="specialist-response">
+    <div class="specialist-status @(Response.Success ? "specialist-status-found" : "specialist-status-not-found")">
+        @(Response.Success ? $"{DomainName} result" : $"No {DomainName.ToLowerInvariant()} result")
+    </div>
+    <div class="specialist-answer">@Response.Answer</div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public required SpecialistAgentResponse Response { get; set; }
+
+    [Parameter]
+    public string? DomainLabel { get; set; }
+
+    private string DomainName => string.IsNullOrWhiteSpace(DomainLabel) ? "Specialist" : DomainLabel;
+}

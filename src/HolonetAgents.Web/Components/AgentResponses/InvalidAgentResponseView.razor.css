@@ -1,0 +1,26 @@
+.invalid-response {
+    display: grid;
+    gap: 0.35rem;
+    color: #842029;
+}
+
+.invalid-response details {
+    max-width: 100%;
+}
+
+.invalid-response summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.invalid-response pre {
+    max-width: min(42rem, 70vw);
+    margin: 0.5rem 0 0;
+    padding: 0.65rem;
+    overflow: auto;
+    color: #212529;
+    background: #fff;
+    border: 1px solid #f1aeb5;
+    white-space: pre-wrap;
+    word-break: break-word;
+}

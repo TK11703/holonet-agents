@@ -1,0 +1,12 @@
+.orchestrator-response {
+    display: flex;
+    align-items: baseline;
+    gap: 0.65rem;
+}
+
+.response-label {
+    color: #5c636a;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}

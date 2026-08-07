@@ -1,0 +1,22 @@
+.specialist-response {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.specialist-status {
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.specialist-status-found {
+    color: #146c43;
+}
+
+.specialist-status-not-found {
+    color: #997404;
+}
+
+.specialist-answer {
+    white-space: pre-wrap;
+    word-break: break-word;
+}

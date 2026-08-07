@@ -1,6 +1,10 @@
 @using HolonetAgents.Web.Models
+@using HolonetAgents.Web.Components.AgentResponses
 @using HolonetAgents.Web.Services
+@using HolonetAgents.Web.Services.AgentResponses
 @inject FoundryAgentService AgentService
+@inject AgentResponseParser ResponseParser
+@inject AgentResponseContractResolver ResponseContractResolver
 @inject IOptions<FoundryOptions> FoundryOptions
 @using Microsoft.Extensions.Options
 @implements IDisposable
@@ -47,7 +51,28 @@
                 <div class="chat-message-meta">
                     @(message.Role == ChatRole.User ? "You" : _selectedAgentName) · @message.Timestamp.ToString("t")
                 </div>
-                <div class="chat-message-text">@message.Text</div>
+                @if (message.AgentResponse is null)
+                {
+                    <div class="chat-message-text">@message.Text</div>
+                }
+                else
+                {
+                    @switch (message.AgentResponse)
+                    {
+                        case PlainTextAgentResponse plainText:
+                            <div class="chat-message-text">@plainText.Text</div>
+                            break;
+                        case ParsedOrchestratorAgentResponse orchestrator:
+                            <OrchestratorResponseView Response="orchestrator.Value" />
+                            break;
+                        case ParsedSpecialistAgentResponse specialist:
+                            <SpecialistResponseView Response="specialist.Value" DomainLabel="@ResponseDomainLabel" />
+                            break;
+                        case InvalidAgentResponse invalid:
+                            <InvalidAgentResponseView Response="invalid" />
+                            break;
+                    }
+                }
             </div>
         }
         @if (_isBusy)
@@ -74,6 +99,15 @@
 
     [Parameter]
     public string? FixedAgentName { get; set; }
+
+    [Parameter]
+    public AgentResponseContract? ResponseContract { get; set; }
+
+    [Parameter]
+    public string? ResponseDomainLabel { get; set; }
+
+    [Parameter]
+    public EventCallback<AgentResponseResult> OnAgentResponse { get; set; }
 
     private IReadOnlyList<AgentSummary> _agents = Array.Empty<AgentSummary>();
     private string? _selectedAgentId;
@@ -167,7 +201,15 @@
         {
             var reply = await AgentService.SendMessageAsync(_previousResponseId, _selectedAgentId!, text, _cts.Token);
             _previousResponseId = reply.ResponseId;
-            _messages.Add(new ChatMessage { Role = ChatRole.Agent, Text = reply.Text });
+            var contract = ResponseContract ?? ResponseContractResolver.Resolve(_selectedAgentName);
+            var parsedResponse = ResponseParser.Parse(reply.RawText, contract);
+            _messages.Add(new ChatMessage
+            {
+                Role = ChatRole.Agent,
+                Text = reply.RawText,
+                AgentResponse = parsedResponse
+            });
+            await OnAgentResponse.InvokeAsync(parsedResponse);
         }
         catch (OperationCanceledException)
         {

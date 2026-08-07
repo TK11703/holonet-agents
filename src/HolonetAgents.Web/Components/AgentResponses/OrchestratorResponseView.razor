@@ -1,0 +1,11 @@
+@using HolonetAgents.Web.Models
+
+<div class="orchestrator-response">
+    <span class="response-label">Classification</span>
+    <strong>@Response.Category</strong>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public required OrchestratorAgentResponse Response { get; set; }
+}

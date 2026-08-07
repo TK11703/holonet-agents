@@ -12,6 +12,8 @@ public sealed class ChatMessage
 
     public required string Text { get; set; }
 
+    public AgentResponseResult? AgentResponse { get; init; }
+
     public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.Now;
 
     public bool IsError { get; init; }

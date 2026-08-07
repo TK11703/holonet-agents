@@ -1,0 +1,15 @@
+@using HolonetAgents.Web.Models
+
+<div class="invalid-response" role="alert">
+    <strong>Unexpected agent response</strong>
+    <span>@Response.Error</span>
+    <details>
+        <summary>View raw response</summary>
+        <pre>@Response.RawText</pre>
+    </details>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public required InvalidAgentResponse Response { get; set; }
+}
