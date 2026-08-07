@@ -10,7 +10,9 @@ public sealed class AgentResponseContractResolverTests
     [Theory]
     [InlineData("holonet-character-agent")]
     [InlineData("holonet-event-agent")]
+    [InlineData("holonet-jedi-agent")]
     [InlineData("holonet-planet-agent")]
+    [InlineData("holonet-sith-agent")]
     [InlineData("holonet-vehicle-agent")]
     public void Resolve_SpecialistAgent_ReturnsSpecialist(string agentName)
     {

@@ -11,6 +11,8 @@ public sealed class HolonetWorkflowServiceTests
     [InlineData("vehicle", "holonet-vehicle-agent")]
     [InlineData("planet", "holonet-planet-agent")]
     [InlineData("event", "holonet-event-agent")]
+    [InlineData("jedi", "holonet-jedi-agent")]
+    [InlineData("sith", "holonet-sith-agent")]
     public async Task ExecuteAsync_RoutesToSpecialistThenSynthesizer(
         string category,
         string expectedSpecialist)

@@ -20,8 +20,8 @@
     <svg class="hero-art" viewBox="0 0 460 320" role="img" aria-labelledby="hero-art-title hero-art-desc">
         <title id="hero-art-title">The Holonet agent workflow</title>
         <desc id="hero-art-desc">
-            A request flows into the orchestrator, fans out to the character, vehicle, planet, and event
-            specialists, and converges on the synthesizer, which returns the final answer.
+            A request flows into the orchestrator, fans out to the character, vehicle, planet, event, Jedi,
+            and Sith specialists, and converges on the synthesizer, which returns the final answer.
         </desc>
 
         <defs>
@@ -33,19 +33,24 @@
 
         <g fill="none" stroke="rgba(148, 163, 184, 0.35)" stroke-width="1.5">
             <path d="M96 160 H168" />
-            <path d="M168 160 C 196 160, 196 58, 232 58" />
-            <path d="M168 160 C 196 160, 196 126, 232 126" />
-            <path d="M168 160 C 196 160, 196 194, 232 194" />
-            <path d="M168 160 C 196 160, 196 262, 232 262" />
-            <path d="M300 58 C 336 58, 336 160, 368 160" />
-            <path d="M300 126 C 336 126, 336 160, 368 160" />
-            <path d="M300 194 C 336 194, 336 160, 368 160" />
-            <path d="M300 262 C 336 262, 336 160, 368 160" />
+            <path d="M168 160 C 196 160, 196 30, 232 30" />
+            <path d="M168 160 C 196 160, 196 82, 232 82" />
+            <path d="M168 160 C 196 160, 196 134, 232 134" />
+            <path d="M168 160 C 196 160, 196 186, 232 186" />
+            <path d="M168 160 C 196 160, 196 238, 232 238" />
+            <path d="M168 160 C 196 160, 196 290, 232 290" />
+            <path d="M300 30 C 336 30, 336 160, 368 160" />
+            <path d="M300 82 C 336 82, 336 160, 368 160" />
+            <path d="M300 134 C 336 134, 336 160, 368 160" />
+            <path d="M300 186 C 336 186, 336 160, 368 160" />
+            <path d="M300 238 C 336 238, 336 160, 368 160" />
+            <path d="M300 290 C 336 290, 336 160, 368 160" />
         </g>
 
         <g class="hero-art-pulse" fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round">
             <path d="M96 160 H168" stroke-dasharray="18 54" />
-            <path d="M300 126 C 336 126, 336 160, 368 160" stroke-dasharray="18 90" />
+            <path d="M168 160 C 196 160, 196 238, 232 238" stroke-dasharray="18 54" />
+            <path d="M300 238 C 336 238, 336 160, 368 160" stroke-dasharray="18 54" />
         </g>
 
         <circle cx="72" cy="160" r="22" fill="rgba(255, 255, 255, 0.06)" stroke="rgba(148, 163, 184, 0.4)" />
@@ -55,17 +60,21 @@
         <text x="168" y="112" class="hero-art-label">Orchestrator</text>
 
         <g fill="rgba(255, 255, 255, 0.05)" stroke="rgba(148, 163, 184, 0.35)">
-            <rect x="232" y="40" width="68" height="36" rx="10" />
-            <rect x="232" y="108" width="68" height="36" rx="10" />
-            <rect x="232" y="176" width="68" height="36" rx="10" />
-            <rect x="232" y="244" width="68" height="36" rx="10" />
+            <rect x="232" y="14" width="68" height="32" rx="9" />
+            <rect x="232" y="66" width="68" height="32" rx="9" />
+            <rect x="232" y="118" width="68" height="32" rx="9" />
+            <rect x="232" y="170" width="68" height="32" rx="9" />
+            <rect x="232" y="222" width="68" height="32" rx="9" />
+            <rect x="232" y="274" width="68" height="32" rx="9" />
         </g>
 
         <g class="hero-art-chip">
-            <text x="266" y="63">Characters</text>
-            <text x="266" y="131">Vehicles</text>
-            <text x="266" y="199">Planets</text>
-            <text x="266" y="267">Events</text>
+            <text x="266" y="34">Characters</text>
+            <text x="266" y="86">Vehicles</text>
+            <text x="266" y="138">Planets</text>
+            <text x="266" y="190">Events</text>
+            <text x="266" y="242">Jedi</text>
+            <text x="266" y="294">Sith</text>
         </g>
 
         <circle cx="390" cy="160" r="28" fill="url(#hero-node)" />
@@ -80,7 +89,7 @@
             <span class="flow-step">1</span>
             <div>
                 <h3>The orchestrator classifies</h3>
-                <p>Your request is categorized as a character, vehicle, planet, or event question.</p>
+                <p>Your request is categorized as a character, vehicle, planet, event, Jedi, or Sith question.</p>
             </div>
         </li>
         <li>
@@ -123,6 +132,14 @@
         <a class="agent-card" href="events">
             <h3>Events</h3>
             <p>Battles, treaties, and the turning points that shaped the galaxy.</p>
+        </a>
+        <a class="agent-card" href="jedi">
+            <h3>Jedi</h3>
+            <p>Jedi teachings, members of the Order, and the light side of the Force.</p>
+        </a>
+        <a class="agent-card" href="sith">
+            <h3>Sith</h3>
+            <p>Sith history, dark side traditions, and the lineages of their orders.</p>
         </a>
     </div>
 </section>

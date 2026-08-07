@@ -8,14 +8,14 @@ state lives in Foundry responses and UI state lives in the browser session.
 
 Each message submitted in **Holonet Chat** runs this workflow:
 
-1. `holonet-orchestrator` classifies the request as a character, vehicle, planet, event, or other request.
+1. `holonet-orchestrator` classifies the request as a character, vehicle, planet, event, Jedi, Sith, or other request.
 2. A classified request is sent to the corresponding `holonet-*-agent` specialist. The `other` category skips this step.
 3. The specialist response, or the original request for `other`, is sent to `holonet-synthesizer-agent`.
 4. The synthesizer's plain-text response is displayed in the chat.
 
-The Foundry project must contain the orchestrator, synthesizer, character, vehicle, planet, and event
-agents using those exact names. Each workflow stage starts an independent Foundry response because
-response-chain IDs belong to the agent that created them.
+The Foundry project must contain the orchestrator, synthesizer, character, vehicle, planet, event, Jedi,
+and Sith agents using those exact names. Each workflow stage starts an independent Foundry response
+because response-chain IDs belong to the agent that created them.
 
 ## Projects
 

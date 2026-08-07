@@ -116,6 +116,8 @@ public sealed class HolonetWorkflowService(
         OrchestratorCategory.Vehicle => "holonet-vehicle-agent",
         OrchestratorCategory.Planet => "holonet-planet-agent",
         OrchestratorCategory.Event => "holonet-event-agent",
+        OrchestratorCategory.Jedi => "holonet-jedi-agent",
+        OrchestratorCategory.Sith => "holonet-sith-agent",
         OrchestratorCategory.Other => null,
         _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
     };

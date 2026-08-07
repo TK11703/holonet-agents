@@ -15,6 +15,8 @@ public enum OrchestratorCategory
     Vehicle,
     Planet,
     Event,
+    Jedi,
+    Sith,
     Other
 }
 

@@ -10,7 +10,9 @@ public sealed class AgentResponseContractResolver
             ["holonet-orchestrator"] = AgentResponseContract.Orchestrator,
             ["holonet-character-agent"] = AgentResponseContract.Specialist,
             ["holonet-event-agent"] = AgentResponseContract.Specialist,
+            ["holonet-jedi-agent"] = AgentResponseContract.Specialist,
             ["holonet-planet-agent"] = AgentResponseContract.Specialist,
+            ["holonet-sith-agent"] = AgentResponseContract.Specialist,
             ["holonet-vehicle-agent"] = AgentResponseContract.Specialist
         };
 

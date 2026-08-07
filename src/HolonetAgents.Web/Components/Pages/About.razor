@@ -53,6 +53,16 @@
                     <td>JSON</td>
                 </tr>
                 <tr>
+                    <td><code>holonet-jedi-agent</code></td>
+                    <td>Answers Jedi questions</td>
+                    <td>JSON</td>
+                </tr>
+                <tr>
+                    <td><code>holonet-sith-agent</code></td>
+                    <td>Answers Sith questions</td>
+                    <td>JSON</td>
+                </tr>
+                <tr>
                     <td><code>holonet-synthesizer-agent</code></td>
                     <td>Rewrites a specialist result into a readable reply</td>
                     <td>Plain text</td>
@@ -76,8 +86,9 @@
             <pre><code>{ "category": "event" }</code></pre>
             <p>
                 One of <code>character</code>, <code>vehicle</code>, <code>planet</code>,
-                <code>event</code>, or <code>other</code>. The <code>other</code> category has no
-                specialist, so the request goes straight to the synthesizer.
+                <code>event</code>, <code>jedi</code>, <code>sith</code>, or <code>other</code>. The
+                <code>other</code> category has no specialist, so the request goes straight to the
+                synthesizer.
             </p>
         </div>
         <div class="contract-card">
