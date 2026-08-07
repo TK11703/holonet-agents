@@ -74,6 +74,7 @@
 
 .section {
     margin-bottom: 3rem;
+    scroll-margin-top: 1.5rem;
 }
 
 .section h2 {
