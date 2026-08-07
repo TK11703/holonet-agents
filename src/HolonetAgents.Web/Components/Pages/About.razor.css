@@ -1,84 +1,86 @@
 .lead {
     max-width: 46rem;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: #495057;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--hn-text-muted);
 }
 
 .about-section {
-    margin-top: 2.5rem;
+    margin-top: 3rem;
 }
 
 .about-section h2 {
-    margin-bottom: 0.6rem;
-    font-size: 1.4rem;
-    font-weight: 700;
+    margin-bottom: 0.7rem;
+    font-size: 1.35rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
 }
 
 .about-section p {
     max-width: 46rem;
-    line-height: 1.6;
-    color: #495057;
+    line-height: 1.7;
+    color: var(--hn-text-muted);
 }
 
 .about-section code {
-    color: #3a0647;
-    background-color: #f3f0f7;
-    border-radius: 0.25rem;
-    padding: 0.1rem 0.3rem;
+    color: var(--hn-accent-bright);
+    background-color: rgba(34, 211, 238, 0.1);
+    border-radius: 6px;
+    padding: 0.1rem 0.35rem;
 }
 
 .about-note {
-    border-left: 3px solid #1b6ec2;
-    padding-left: 0.85rem;
-    color: #495057;
+    border-left: 2px solid var(--hn-accent);
+    padding-left: 1rem;
+    color: var(--hn-text-muted);
 }
 
 .contract-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
     gap: 1rem;
-    margin: 1.25rem 0;
+    margin: 1.5rem 0;
 }
 
 .contract-card {
-    padding: 1.1rem;
-    border: 1px solid #dee2e6;
-    border-radius: 0.75rem;
-    background-color: #fff;
+    padding: 1.25rem;
+    border: 1px solid var(--hn-border);
+    border-radius: var(--hn-radius-lg);
+    background-color: rgba(255, 255, 255, 0.025);
 }
 
 .contract-card h3 {
-    margin-bottom: 0.6rem;
-    font-size: 1rem;
+    margin-bottom: 0.7rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    color: #1b6ec2;
+    color: #fff;
 }
 
 .contract-card pre {
-    margin-bottom: 0.75rem;
-    padding: 0.6rem 0.75rem;
-    border-radius: 0.5rem;
-    background-color: #f8f9fa;
+    margin-bottom: 0.85rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--hn-border);
+    border-radius: var(--hn-radius-sm);
+    background-color: var(--hn-surface-sunken);
     overflow-x: auto;
 }
 
 .contract-card pre code {
     padding: 0;
     background: none;
-    color: #1b1f24;
-    font-size: 0.85rem;
+    color: var(--hn-accent-bright);
+    font-size: 0.82rem;
     white-space: pre-wrap;
     word-break: break-word;
 }
 
 .contract-card p {
     margin-bottom: 0;
-    font-size: 0.925rem;
+    font-size: 0.9rem;
 }
 
 .about-stack {
     max-width: 46rem;
-    color: #495057;
+    color: var(--hn-text-muted);
     line-height: 1.8;
 }

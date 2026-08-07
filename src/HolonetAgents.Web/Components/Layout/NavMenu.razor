@@ -1,49 +1,44 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Holonet Agents</a>
-    </div>
+﻿<div class="nav-header">
+    <a class="nav-brand" href="">
+        <span class="nav-brand-mark" aria-hidden="true"></span>
+        <span class="nav-brand-text">
+            <strong>Holonet</strong>
+            <small>Agents</small>
+        </span>
+    </a>
 </div>
 
 <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+    <nav class="nav-menu">
+        <p class="nav-section">Workspace</p>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="chat">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Holonet Chat
-            </NavLink>
-        </div>
+        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <span class="nav-icon icon-home" aria-hidden="true"></span> Home
+        </NavLink>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="characters">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Characters
-            </NavLink>
-        </div>
+        <NavLink class="nav-link" href="chat">
+            <span class="nav-icon icon-chat" aria-hidden="true"></span> Holonet Chat
+        </NavLink>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="events">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Events
-            </NavLink>
-        </div>
+        <p class="nav-section">Specialists</p>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="planets">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Planets
-            </NavLink>
-        </div>
+        <NavLink class="nav-link" href="characters">
+            <span class="nav-icon icon-character" aria-hidden="true"></span> Characters
+        </NavLink>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="vehicles">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Vehicles
-            </NavLink>
-        </div>
+        <NavLink class="nav-link" href="events">
+            <span class="nav-icon icon-event" aria-hidden="true"></span> Events
+        </NavLink>
 
+        <NavLink class="nav-link" href="planets">
+            <span class="nav-icon icon-planet" aria-hidden="true"></span> Planets
+        </NavLink>
+
+        <NavLink class="nav-link" href="vehicles">
+            <span class="nav-icon icon-vehicle" aria-hidden="true"></span> Vehicles
+        </NavLink>
     </nav>
 </div>
 

@@ -1,18 +1,18 @@
 .workflow-trace {
-    margin-bottom: 0.75rem;
-    padding: 0.6rem 0.75rem;
-    border: 1px solid #e2e6ea;
-    border-radius: 0.5rem;
-    background-color: #f8f9fa;
+    margin-bottom: 0.85rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--hn-border);
+    border-radius: var(--hn-radius);
+    background-color: var(--hn-surface-sunken);
 }
 
 .workflow-trace-title {
-    margin-bottom: 0.4rem;
-    font-size: 0.7rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #6c757d;
+    color: var(--hn-text-faint);
 }
 
 .workflow-steps {
@@ -46,16 +46,18 @@
 }
 
 .workflow-step-ok .workflow-step-icon {
-    background-color: #198754;
+    color: #041016;
+    background-color: var(--hn-success);
 }
 
 .workflow-step-failed .workflow-step-icon {
-    background-color: #b32121;
+    color: #1a0509;
+    background-color: var(--hn-danger);
 }
 
 .workflow-step-pending .workflow-step-icon {
     background-color: transparent;
-    color: #1b6ec2;
+    color: var(--hn-accent);
 }
 
 .workflow-step-body {
@@ -66,39 +68,40 @@
     margin-right: 0.4rem;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #052767;
+    color: var(--hn-accent-bright);
 }
 
 .workflow-step-agent {
-    font-family: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
+    font-family: var(--hn-font-mono);
     font-size: 0.72rem;
-    color: #6c757d;
+    color: var(--hn-text-faint);
     word-break: break-all;
 }
 
 .workflow-step-detail {
     margin: 0;
     font-size: 0.8rem;
-    color: #343a40;
+    color: var(--hn-text-muted);
 }
 
 .workflow-step-failed .workflow-step-detail {
-    color: #b32121;
+    color: #fda4af;
     word-break: break-word;
 }
 
 .workflow-step-output {
-    margin: 0.3rem 0 0;
-    padding: 0.4rem 0.6rem;
-    border-left: 3px solid #ced4da;
-    border-radius: 0 0.25rem 0.25rem 0;
-    background-color: #fff;
+    margin: 0.4rem 0 0;
+    padding: 0.5rem 0.7rem;
+    border-left: 2px solid rgba(34, 211, 238, 0.45);
+    border-radius: 0 var(--hn-radius-sm) var(--hn-radius-sm) 0;
+    background-color: rgba(255, 255, 255, 0.035);
     font-size: 0.8rem;
-    color: #495057;
+    line-height: 1.6;
+    color: var(--hn-text-muted);
     white-space: pre-wrap;
 }
 
 .workflow-step-pending .workflow-step-detail {
-    color: #6c757d;
+    color: var(--hn-text-faint);
     font-style: italic;
 }

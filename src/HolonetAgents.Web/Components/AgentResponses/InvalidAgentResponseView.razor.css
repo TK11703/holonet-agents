@@ -1,7 +1,7 @@
 .invalid-response {
     display: grid;
     gap: 0.35rem;
-    color: #842029;
+    color: #fda4af;
 }
 
 .invalid-response details {
@@ -16,11 +16,13 @@
 .invalid-response pre {
     max-width: min(42rem, 70vw);
     margin: 0.5rem 0 0;
-    padding: 0.65rem;
+    padding: 0.7rem 0.85rem;
     overflow: auto;
-    color: #212529;
-    background: #fff;
-    border: 1px solid #f1aeb5;
+    border: 1px solid rgba(251, 113, 133, 0.3);
+    border-radius: var(--hn-radius-sm);
+    color: var(--hn-text);
+    background: rgba(0, 0, 0, 0.35);
+    font-size: 0.8rem;
     white-space: pre-wrap;
     word-break: break-word;
 }
