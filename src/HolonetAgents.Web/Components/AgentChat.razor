@@ -7,8 +7,10 @@
 @inject AgentResponseParser ResponseParser
 @inject AgentResponseContractResolver ResponseContractResolver
 @inject IOptions<FoundryOptions> FoundryOptions
+@inject IJSRuntime JS
 @using Microsoft.Extensions.Options
-@implements IDisposable
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
 
 @if (_isLoadingAgents)
 {
@@ -41,7 +43,7 @@
         <div class="alert alert-danger" role="alert">@_startupError</div>
     }
 
-    <div class="chat-history" aria-live="polite">
+    <div class="chat-history" aria-live="polite" @ref="_historyElement">
         @if (_messages.Count == 0)
         {
             <p class="text-muted">Send a message to start chatting with the selected agent.</p>
@@ -131,6 +133,9 @@
     private bool _isLoadingAgents = true;
     private bool _isBusy;
     private string? _previousResponseId;
+    private ElementReference _historyElement;
+    private IJSObjectReference? _scrollModule;
+    private IJSObjectReference? _autoScroller;
 
     private bool IsAgentSelectionLocked => !string.IsNullOrWhiteSpace(FixedAgentName);
     private string FormName => IsAgentSelectionLocked ? $"agent-chat-{FixedAgentName}" : "agent-chat";
@@ -180,6 +185,19 @@
         {
             _isLoadingAgents = false;
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        // Assets[] yields a fingerprinted path relative to the app root; ESM needs an explicit relative specifier.
+        var modulePath = $"./{Assets["Components/AgentChat.razor.js"]}";
+        _scrollModule = await JS.InvokeAsync<IJSObjectReference>("import", modulePath);
+        _autoScroller = await _scrollModule.InvokeAsync<IJSObjectReference>("createAutoScroller", _historyElement);
     }
 
     private async Task OnAgentChangedAsync(ChangeEventArgs args)
@@ -269,10 +287,28 @@
         }
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         _cts.Cancel();
         _cts.Dispose();
+
+        try
+        {
+            if (_autoScroller is not null)
+            {
+                await _autoScroller.InvokeVoidAsync("dispose");
+                await _autoScroller.DisposeAsync();
+            }
+
+            if (_scrollModule is not null)
+            {
+                await _scrollModule.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit is already gone; nothing to clean up on the client.
+        }
     }
 
     private sealed class MessageForm
