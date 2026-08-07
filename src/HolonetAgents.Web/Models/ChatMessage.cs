@@ -12,7 +12,11 @@ public sealed class ChatMessage
 
     public required string Text { get; set; }
 
+    public string? AuthorName { get; init; }
+
     public AgentResponseResult? AgentResponse { get; init; }
+
+    public IReadOnlyList<HolonetWorkflowStep>? WorkflowSteps { get; init; }
 
     public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.Now;
 

@@ -1,0 +1,49 @@
+@using HolonetAgents.Web.Models
+
+<div class="workflow-trace">
+    <div class="workflow-trace-title">Workflow</div>
+    <ol class="workflow-steps">
+        @foreach (var step in Steps)
+        {
+            <li class="workflow-step @(step.Succeeded ? "workflow-step-ok" : "workflow-step-failed")">
+                <span class="workflow-step-icon" aria-hidden="true">@(step.Succeeded ? "✓" : "!")</span>
+                <div class="workflow-step-body">
+                    <span class="workflow-step-stage">@step.Stage</span>
+                    <span class="workflow-step-agent">@step.AgentName</span>
+                    <p class="workflow-step-detail">@step.Detail</p>
+                    @if (!string.IsNullOrWhiteSpace(step.Output))
+                    {
+                        <blockquote class="workflow-step-output">@step.Output</blockquote>
+                    }
+                </div>
+            </li>
+        }
+        @if (InProgress)
+        {
+            <li class="workflow-step workflow-step-pending">
+                <span class="spinner-border spinner-border-sm workflow-step-icon" aria-hidden="true"></span>
+                <div class="workflow-step-body">
+                    <p class="workflow-step-detail">@PendingLabel</p>
+                </div>
+            </li>
+        }
+    </ol>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<HolonetWorkflowStep> Steps { get; set; }
+
+    [Parameter]
+    public bool InProgress { get; set; }
+
+    // "Other" requests skip the specialist, so the step after the orchestrator stays deliberately vague.
+    private string PendingLabel => Steps.Count == 0
+        ? "Asking the orchestrator to classify the request…"
+        : Steps[^1].Stage switch
+        {
+            HolonetWorkflowStage.Orchestrator => "Routing to the next agent…",
+            HolonetWorkflowStage.Specialist => "Synthesizing the final answer…",
+            _ => "Working…"
+        };
+}

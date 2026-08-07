@@ -50,8 +50,12 @@
         {
             <div class="chat-message @(message.Role == ChatRole.User ? "chat-message-user" : "chat-message-agent") @(message.IsError ? "chat-message-error" : null)">
                 <div class="chat-message-meta">
-                    @(message.Role == ChatRole.User ? "You" : _selectedAgentName) · @message.Timestamp.ToString("t")
+                    @(message.Role == ChatRole.User ? "You" : message.AuthorName ?? _selectedAgentName) · @message.Timestamp.ToString("t")
                 </div>
+                @if (message.WorkflowSteps is { Count: > 0 } steps)
+                {
+                    <WorkflowTraceView Steps="steps" />
+                }
                 @if (message.AgentResponse is null)
                 {
                     <div class="chat-message-text">@message.Text</div>
@@ -79,7 +83,14 @@
         @if (_isBusy)
         {
             <div class="chat-message chat-message-agent">
-                <div class="chat-message-text text-muted">Thinking…</div>
+                @if (UseHolonetWorkflow)
+                {
+                    <WorkflowTraceView Steps="_liveSteps" InProgress="true" />
+                }
+                else
+                {
+                    <div class="chat-message-text text-muted">Thinking…</div>
+                }
             </div>
         }
     </div>
@@ -94,6 +105,7 @@
 
 @code {
     private readonly List<ChatMessage> _messages = new();
+    private readonly List<HolonetWorkflowStep> _liveSteps = new();
     private readonly MessageForm _form = new();
     private readonly CancellationTokenSource _cts = new();
     private readonly string _agentSelectId = $"agent-select-{Guid.NewGuid():N}";
@@ -184,6 +196,7 @@
     private Task StartNewConversationAsync()
     {
         _messages.Clear();
+        _liveSteps.Clear();
         _previousResponseId = null;
         _form.Message = string.Empty;
         return Task.CompletedTask;
@@ -204,9 +217,20 @@
         try
         {
             AgentResponseResult parsedResponse;
+            IReadOnlyList<HolonetWorkflowStep>? workflowSteps = null;
+
             if (UseHolonetWorkflow)
             {
-                parsedResponse = await WorkflowService.ExecuteAsync(text, _cts.Token);
+                _liveSteps.Clear();
+                var progress = new Progress<HolonetWorkflowStep>(step =>
+                {
+                    _liveSteps.Add(step);
+                    StateHasChanged();
+                });
+
+                var workflow = await WorkflowService.ExecuteAsync(text, progress, _cts.Token);
+                parsedResponse = workflow.Response;
+                workflowSteps = workflow.Steps;
             }
             else
             {
@@ -224,7 +248,10 @@
             {
                 Role = ChatRole.Agent,
                 Text = parsedResponse.RawText,
-                AgentResponse = parsedResponse
+                AgentResponse = parsedResponse,
+                WorkflowSteps = workflowSteps,
+                // The workflow always ends on the agent whose response is being shown.
+                AuthorName = workflowSteps is { Count: > 0 } ? workflowSteps[^1].AgentName : null
             });
             await OnAgentResponse.InvokeAsync(parsedResponse);
         }
