@@ -2,7 +2,8 @@
 @using HolonetAgents.Web.Components.AgentResponses
 @using HolonetAgents.Web.Services
 @using HolonetAgents.Web.Services.AgentResponses
-@inject FoundryAgentService AgentService
+@inject IFoundryAgentService AgentService
+@inject HolonetWorkflowService WorkflowService
 @inject AgentResponseParser ResponseParser
 @inject AgentResponseContractResolver ResponseContractResolver
 @inject IOptions<FoundryOptions> FoundryOptions
@@ -104,6 +105,9 @@
     public AgentResponseContract? ResponseContract { get; set; }
 
     [Parameter]
+    public bool UseHolonetWorkflow { get; set; }
+
+    [Parameter]
     public string? ResponseDomainLabel { get; set; }
 
     [Parameter]
@@ -199,14 +203,27 @@
 
         try
         {
-            var reply = await AgentService.SendMessageAsync(_previousResponseId, _selectedAgentId!, text, _cts.Token);
-            _previousResponseId = reply.ResponseId;
-            var contract = ResponseContract ?? ResponseContractResolver.Resolve(_selectedAgentName);
-            var parsedResponse = ResponseParser.Parse(reply.RawText, contract);
+            AgentResponseResult parsedResponse;
+            if (UseHolonetWorkflow)
+            {
+                parsedResponse = await WorkflowService.ExecuteAsync(text, _cts.Token);
+            }
+            else
+            {
+                var reply = await AgentService.SendMessageAsync(
+                    _previousResponseId,
+                    _selectedAgentId!,
+                    text,
+                    _cts.Token);
+                _previousResponseId = reply.ResponseId;
+                var contract = ResponseContract ?? ResponseContractResolver.Resolve(_selectedAgentName);
+                parsedResponse = ResponseParser.Parse(reply.RawText, contract);
+            }
+
             _messages.Add(new ChatMessage
             {
                 Role = ChatRole.Agent,
-                Text = reply.RawText,
+                Text = parsedResponse.RawText,
                 AgentResponse = parsedResponse
             });
             await OnAgentResponse.InvokeAsync(parsedResponse);

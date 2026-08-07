@@ -12,9 +12,10 @@ builder.Services.AddRazorComponents()
 builder.Services.AddOptions<FoundryOptions>()
     .Bind(builder.Configuration.GetSection(FoundryOptions.SectionName));
 
-builder.Services.AddSingleton<FoundryAgentService>();
+builder.Services.AddSingleton<IFoundryAgentService, FoundryAgentService>();
 builder.Services.AddSingleton<AgentResponseParser>();
 builder.Services.AddSingleton<AgentResponseContractResolver>();
+builder.Services.AddSingleton<HolonetWorkflowService>();
 builder.Services.AddHostedService<FoundryAgentCacheWarmupService>();
 
 var app = builder.Build();

@@ -1,7 +1,7 @@
 namespace HolonetAgents.Web.Services;
 
 public sealed class FoundryAgentCacheWarmupService(
-    FoundryAgentService agentService,
+    IFoundryAgentService agentService,
     ILogger<FoundryAgentCacheWarmupService> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

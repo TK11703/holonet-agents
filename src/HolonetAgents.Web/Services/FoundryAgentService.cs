@@ -16,7 +16,7 @@ namespace HolonetAgents.Web.Services;
 /// operations needed by the chat window: listing prompt agents and exchanging
 /// responses with an agent.
 /// </summary>
-public sealed class FoundryAgentService
+public sealed class FoundryAgentService : IFoundryAgentService
 {
     private readonly AIProjectClient? _client;
     private readonly FoundryOptions _options;

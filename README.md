@@ -1,8 +1,21 @@
 # holonet-agents
 
-A .NET 10 Blazor Web App (interactive server rendering) that provides a chat window for talking to
-the AI agents that already exist in an Azure AI Foundry project. No database is used — conversation
-state lives in the Foundry thread and in the browser session.
+A .NET 10 Blazor Web App (interactive server rendering) that provides chat windows for AI agents
+that already exist in a Microsoft Foundry project. No database is used; direct-agent conversation
+state lives in Foundry responses and UI state lives in the browser session.
+
+## Holonet workflow
+
+Each message submitted in **Holonet Chat** runs this workflow:
+
+1. `holonet-orchestrator` classifies the request as a character, vehicle, planet, event, or other request.
+2. A classified request is sent to the corresponding `holonet-*-agent` specialist. The `other` category skips this step.
+3. The specialist response, or the original request for `other`, is sent to `holonet-synthesizer-agent`.
+4. The synthesizer's plain-text response is displayed in the chat.
+
+The Foundry project must contain the orchestrator, synthesizer, character, vehicle, planet, and event
+agents using those exact names. Each workflow stage starts an independent Foundry response because
+response-chain IDs belong to the agent that created them.
 
 ## Projects
 
@@ -38,5 +51,5 @@ app's managed identity.
 dotnet run --project src/HolonetAgents.Web
 ```
 
-Then browse to the **Chat** page, pick an agent, and send messages. Use **New conversation** to start
-a fresh Foundry thread.
+Then browse to **Holonet Chat** to use the workflow, or open a specialist page to chat directly with
+that agent. Use **New conversation** to clear the current browser chat and direct-agent response chain.
