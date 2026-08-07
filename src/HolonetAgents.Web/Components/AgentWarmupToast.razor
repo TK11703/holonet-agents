@@ -1,0 +1,103 @@
+@using HolonetAgents.Web.Services
+@inject AgentWarmupState WarmupState
+@implements IDisposable
+
+@if (_visible)
+{
+    @switch (_snapshot.Status)
+    {
+        case AgentWarmupStatus.Running:
+            <div class="warmup-toast warmup-toast-busy" role="status" aria-live="polite">
+                <div class="spinner-border spinner-border-sm" aria-hidden="true"></div>
+                <div>
+                    <strong>Connecting to Foundry…</strong>
+                    <p>Loading the agent list. Chat will be ready in a moment.</p>
+                </div>
+            </div>
+            break;
+
+        case AgentWarmupStatus.Completed:
+            <div class="warmup-toast warmup-toast-ready" role="status" aria-live="polite">
+                <span class="warmup-icon" aria-hidden="true">✓</span>
+                <div>
+                    <strong>Agents ready</strong>
+                    <p>@_snapshot.AgentCount @(_snapshot.AgentCount == 1 ? "agent" : "agents") loaded. You can start chatting.</p>
+                </div>
+                <button type="button" class="btn-close" aria-label="Dismiss" @onclick="Dismiss"></button>
+            </div>
+            break;
+
+        case AgentWarmupStatus.Failed:
+            <div class="warmup-toast warmup-toast-failed" role="alert" aria-live="assertive">
+                <span class="warmup-icon" aria-hidden="true">!</span>
+                <div>
+                    <strong>Could not load agents</strong>
+                    <p>@_snapshot.Error</p>
+                </div>
+                <button type="button" class="btn-close" aria-label="Dismiss" @onclick="Dismiss"></button>
+            </div>
+            break;
+    }
+}
+
+@code {
+    private readonly CancellationTokenSource _cts = new();
+    private AgentWarmupSnapshot _snapshot = default!;
+    private bool _observedRunning;
+    private bool _dismissed;
+
+    // Users who arrive after a successful warmup never waited, so there is nothing to report.
+    private bool _visible =>
+        !_dismissed && _snapshot.Status switch
+        {
+            AgentWarmupStatus.Running => true,
+            AgentWarmupStatus.Completed => _observedRunning,
+            AgentWarmupStatus.Failed => true,
+            _ => false
+        };
+
+    protected override void OnInitialized()
+    {
+        _snapshot = WarmupState.Current;
+        _observedRunning = _snapshot.Status == AgentWarmupStatus.Running;
+        WarmupState.Changed += OnWarmupChanged;
+    }
+
+    private void OnWarmupChanged(AgentWarmupSnapshot snapshot) =>
+        _ = InvokeAsync(async () =>
+        {
+            _snapshot = snapshot;
+            StateHasChanged();
+
+            if (snapshot.Status == AgentWarmupStatus.Completed && _observedRunning)
+            {
+                await AutoDismissAsync();
+            }
+        });
+
+    private async Task AutoDismissAsync()
+    {
+        try
+        {
+            await Task.Delay(TimeSpan.FromSeconds(6), _cts.Token);
+            Dismiss();
+        }
+        catch (OperationCanceledException)
+        {
+            // Component is being disposed.
+        }
+    }
+
+    private void Dismiss()
+    {
+        _dismissed = true;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        WarmupState.Changed -= OnWarmupChanged;
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}

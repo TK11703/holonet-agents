@@ -16,6 +16,7 @@ builder.Services.AddSingleton<IFoundryAgentService, FoundryAgentService>();
 builder.Services.AddSingleton<AgentResponseParser>();
 builder.Services.AddSingleton<AgentResponseContractResolver>();
 builder.Services.AddSingleton<HolonetWorkflowService>();
+builder.Services.AddSingleton<AgentWarmupState>();
 builder.Services.AddHostedService<FoundryAgentCacheWarmupService>();
 
 var app = builder.Build();
