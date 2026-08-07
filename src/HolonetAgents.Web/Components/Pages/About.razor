@@ -1,0 +1,179 @@
+@page "/about"
+
+<PageTitle>About Holonet Agents</PageTitle>
+
+<h1>About</h1>
+
+<p class="lead">
+    Holonet Agents is a thin client. It hosts no models and stores no data of its own — every answer
+    comes from prompt agents that already live in your Microsoft Foundry project. This page describes
+    what the app expects from those agents and how it handles their responses.
+</p>
+
+<section class="about-section">
+    <h2>Agent roster</h2>
+    <p>
+        The app addresses agents by name. If an agent is missing from the project, the workflow that
+        depends on it reports an error instead of silently skipping a step.
+    </p>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">Agent</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Returns</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>holonet-orchestrator</code></td>
+                    <td>Classifies an incoming request into a category</td>
+                    <td>JSON</td>
+                </tr>
+                <tr>
+                    <td><code>holonet-character-agent</code></td>
+                    <td>Answers character questions</td>
+                    <td>JSON</td>
+                </tr>
+                <tr>
+                    <td><code>holonet-vehicle-agent</code></td>
+                    <td>Answers vehicle questions</td>
+                    <td>JSON</td>
+                </tr>
+                <tr>
+                    <td><code>holonet-planet-agent</code></td>
+                    <td>Answers planet questions</td>
+                    <td>JSON</td>
+                </tr>
+                <tr>
+                    <td><code>holonet-event-agent</code></td>
+                    <td>Answers event questions</td>
+                    <td>JSON</td>
+                </tr>
+                <tr>
+                    <td><code>holonet-synthesizer-agent</code></td>
+                    <td>Rewrites a specialist result into a readable reply</td>
+                    <td>Plain text</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="about-section">
+    <h2>Response contracts</h2>
+    <p>
+        Agent output is validated before it reaches the screen. The orchestrator and the specialists must
+        return JSON that matches these shapes exactly; unknown properties are rejected so a drifting prompt
+        surfaces as a visible error rather than a silently wrong answer.
+    </p>
+
+    <div class="contract-grid">
+        <div class="contract-card">
+            <h3>Orchestrator</h3>
+            <pre><code>{ "category": "event" }</code></pre>
+            <p>
+                One of <code>character</code>, <code>vehicle</code>, <code>planet</code>,
+                <code>event</code>, or <code>other</code>. The <code>other</code> category has no
+                specialist, so the request goes straight to the synthesizer.
+            </p>
+        </div>
+        <div class="contract-card">
+            <h3>Specialist</h3>
+            <pre><code>{ "answer": "…", "success": true }</code></pre>
+            <p>
+                Both properties are required. Responses wrapped in a Markdown code fence are unwrapped
+                automatically, since models commonly add one.
+            </p>
+        </div>
+        <div class="contract-card">
+            <h3>Synthesizer</h3>
+            <pre><code>The Battle of Yavin was …</code></pre>
+            <p>
+                Plain prose, not JSON. Whatever it returns is shown to the reader as the final answer.
+            </p>
+        </div>
+    </div>
+
+    <p class="about-note">
+        When a response fails validation, the chat shows a contract error along with the raw text the agent
+        actually returned, which makes prompt regressions easy to spot.
+    </p>
+</section>
+
+<section class="about-section">
+    <h2>Conversation state</h2>
+    <p>
+        There is no database. A specialist page keeps a conversation chain with its own agent, so follow-up
+        questions retain context. Holonet Chat behaves differently: each submission is a fresh orchestration
+        run, because a Foundry response chain belongs to the agent that created it and cannot be shared
+        across the orchestrator, a specialist, and the synthesizer. Messages themselves live only in the
+        browser circuit and disappear on reload or when you choose <strong>New conversation</strong>.
+    </p>
+</section>
+
+<section class="about-section">
+    <h2>Configuration</h2>
+    <p>
+        Settings bind from the <code>Foundry</code> configuration section, so they can come from
+        <code>appsettings.json</code>, user secrets, or environment variables.
+    </p>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">Setting</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Default</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>Endpoint</code></td>
+                    <td>Foundry project endpoint. Required.</td>
+                    <td>—</td>
+                </tr>
+                <tr>
+                    <td><code>DefaultAgentId</code></td>
+                    <td>Agent pre-selected on pages that allow a choice.</td>
+                    <td>—</td>
+                </tr>
+                <tr>
+                    <td><code>ManagedIdentityClientId</code></td>
+                    <td>User-assigned managed identity for Azure hosting.</td>
+                    <td>—</td>
+                </tr>
+                <tr>
+                    <td><code>AgentListTimeoutSeconds</code></td>
+                    <td>Time budget for loading the agent list.</td>
+                    <td>30</td>
+                </tr>
+                <tr>
+                    <td><code>RunTimeoutSeconds</code></td>
+                    <td>Time budget for a single agent response.</td>
+                    <td>120</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p>
+        Authentication uses <code>DefaultAzureCredential</code>. Locally that means <code>az login</code>;
+        in Azure it resolves to the app's managed identity. Either identity needs the
+        <strong>Azure AI User</strong> role on the project. The agent list is cached once at startup and
+        reused, so opening a page does not re-query Foundry.
+    </p>
+</section>
+
+<section class="about-section">
+    <h2>Built with</h2>
+    <ul class="about-stack">
+        <li>.NET 10 and Blazor Web App with interactive server rendering</li>
+        <li><code>Azure.AI.Projects</code> for agent discovery and the responses API</li>
+        <li><code>Azure.Identity</code> for credential resolution</li>
+        <li>xUnit for the response-contract and workflow-routing tests</li>
+    </ul>
+</section>
