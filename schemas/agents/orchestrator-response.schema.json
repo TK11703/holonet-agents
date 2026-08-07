@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "orchestrator-response.schema.json",
+  "title": "Holonet Orchestrator Response",
+  "description": "Classifies a request for routing through the Holonet workflow.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "category"
+  ],
+  "properties": {
+    "category": {
+      "type": "string",
+      "enum": [
+        "character",
+        "vehicle",
+        "planet",
+        "event",
+        "jedi",
+        "sith",
+        "other"
+      ]
+    }
+  }
+}

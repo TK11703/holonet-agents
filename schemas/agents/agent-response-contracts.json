@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "agents": [
+    {
+      "name": "holonet-orchestrator",
+      "responseFormat": "json_schema",
+      "schema": "orchestrator-response.schema.json"
+    },
+    {
+      "name": "holonet-character-agent",
+      "responseFormat": "json_schema",
+      "schema": "specialist-response.schema.json"
+    },
+    {
+      "name": "holonet-event-agent",
+      "responseFormat": "json_schema",
+      "schema": "specialist-response.schema.json"
+    },
+    {
+      "name": "holonet-jedi-agent",
+      "responseFormat": "json_schema",
+      "schema": "specialist-response.schema.json"
+    },
+    {
+      "name": "holonet-planet-agent",
+      "responseFormat": "json_schema",
+      "schema": "specialist-response.schema.json"
+    },
+    {
+      "name": "holonet-sith-agent",
+      "responseFormat": "json_schema",
+      "schema": "specialist-response.schema.json"
+    },
+    {
+      "name": "holonet-vehicle-agent",
+      "responseFormat": "json_schema",
+      "schema": "specialist-response.schema.json"
+    },
+    {
+      "name": "holonet-synthesizer-agent",
+      "responseFormat": "text"
+    }
+  ]
+}

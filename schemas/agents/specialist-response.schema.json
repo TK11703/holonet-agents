@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "specialist-response.schema.json",
+  "title": "Holonet Specialist Response",
+  "description": "Returns a specialist answer and whether the request could be answered.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "answer",
+    "success"
+  ],
+  "properties": {
+    "answer": {
+      "type": "string"
+    },
+    "success": {
+      "type": "boolean"
+    }
+  }
+}

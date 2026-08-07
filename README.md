@@ -17,6 +17,18 @@ The Foundry project must contain the orchestrator, synthesizer, character, vehic
 and Sith agents using those exact names. Each workflow stage starts an independent Foundry response
 because response-chain IDs belong to the agent that created them.
 
+## Agent response schemas
+
+The source-controlled JSON Schema contracts and exact agent-to-contract mapping are in
+[`schemas/agents`](schemas/agents/README.md). The orchestrator has its own structured response schema,
+all six specialists share one schema, and the synthesizer returns plain text.
+
+## Agent instructions and knowledge
+
+Store each agent's instruction text and local JSON knowledge under [`agents`](agents/README.md). Each
+directory uses the exact Foundry agent name, contains an `instructions.md` file, and may contain a
+`knowledge` directory for domain data.
+
 ## Projects
 
 - `src/HolonetAgents.Web` — the Blazor Web App.
