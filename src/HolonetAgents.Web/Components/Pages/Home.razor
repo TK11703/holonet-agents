@@ -49,8 +49,32 @@
 
         <g class="hero-art-pulse" fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round">
             <path d="M96 160 H168" stroke-dasharray="18 54" />
-            <path d="M168 160 C 196 160, 196 238, 232 238" stroke-dasharray="18 54" />
-            <path d="M300 238 C 336 238, 336 160, 368 160" stroke-dasharray="18 54" />
+
+            @* Each route lights up in turn, so the animation cycles through every specialist. *@
+            <g class="hero-art-route" style="--route-index: 0">
+                <path d="M168 160 C 196 160, 196 30, 232 30" stroke-dasharray="18 54" />
+                <path d="M300 30 C 336 30, 336 160, 368 160" stroke-dasharray="18 54" />
+            </g>
+            <g class="hero-art-route" style="--route-index: 1">
+                <path d="M168 160 C 196 160, 196 82, 232 82" stroke-dasharray="18 54" />
+                <path d="M300 82 C 336 82, 336 160, 368 160" stroke-dasharray="18 54" />
+            </g>
+            <g class="hero-art-route" style="--route-index: 2">
+                <path d="M168 160 C 196 160, 196 134, 232 134" stroke-dasharray="18 54" />
+                <path d="M300 134 C 336 134, 336 160, 368 160" stroke-dasharray="18 54" />
+            </g>
+            <g class="hero-art-route" style="--route-index: 3">
+                <path d="M168 160 C 196 160, 196 186, 232 186" stroke-dasharray="18 54" />
+                <path d="M300 186 C 336 186, 336 160, 368 160" stroke-dasharray="18 54" />
+            </g>
+            <g class="hero-art-route" style="--route-index: 4">
+                <path d="M168 160 C 196 160, 196 238, 232 238" stroke-dasharray="18 54" />
+                <path d="M300 238 C 336 238, 336 160, 368 160" stroke-dasharray="18 54" />
+            </g>
+            <g class="hero-art-route" style="--route-index: 5">
+                <path d="M168 160 C 196 160, 196 290, 232 290" stroke-dasharray="18 54" />
+                <path d="M300 290 C 336 290, 336 160, 368 160" stroke-dasharray="18 54" />
+            </g>
         </g>
 
         <circle cx="72" cy="160" r="22" fill="rgba(255, 255, 255, 0.06)" stroke="rgba(148, 163, 184, 0.4)" />

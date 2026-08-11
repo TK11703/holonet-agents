@@ -107,9 +107,30 @@
     animation: hero-flow 2.4s linear infinite;
 }
 
+/* One slot per specialist route; the full cycle is slot duration x route count. */
+.hero-art-route {
+    opacity: 0;
+    animation: hero-route 14.4s linear infinite;
+    animation-delay: calc(var(--route-index) * 2.4s);
+}
+
 @keyframes hero-flow {
     to {
         stroke-dashoffset: -72;
+    }
+}
+
+@keyframes hero-route {
+    0% {
+        opacity: 0;
+    }
+
+    3%, 14% {
+        opacity: 1;
+    }
+
+    17%, 100% {
+        opacity: 0;
     }
 }
 
@@ -261,6 +282,11 @@
 
 @media (prefers-reduced-motion: reduce) {
     .hero-art-pulse path {
+        animation: none;
+    }
+
+    .hero-art-route {
+        opacity: 1;
         animation: none;
     }
 
